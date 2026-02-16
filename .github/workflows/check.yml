@@ -39,3 +39,14 @@ jobs:
           set -e
           git branch -a | grep -q "feature-windows"
           git branch -a | grep -q "feature-ubuntu"
+
+      - name: Generate completion code
+        if: success()
+        run: |
+          CODE=$(printf "%s:%s" "${GITHUB_REPOSITORY}" "${GITHUB_SHA}" | sha256sum | awk '{print $1}' | cut -c1-12)
+          echo "COMPLETION CODE: PASS-${CODE}"
+          echo "##Completed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Completion code:** \`PASS-${CODE}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Copy this code into Teachbase." >> "$GITHUB_STEP_SUMMARY"
