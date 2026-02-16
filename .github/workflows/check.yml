@@ -1,0 +1,41 @@
+name: Git Practice Check
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history + all branches)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all branches
+        run: |
+          git fetch --all --prune
+
+      - name: Check required files exist
+        run: |
+          set -e
+          test -f README.md
+          test -f proof/windows.txt
+          test -f proof/ubuntu.txt
+
+      - name: Check commit messages exist
+        run: |
+          set -e
+          git log --pretty=format:"%s" | grep -Fxq "initial commit (windows)"
+          git log --pretty=format:"%s" | grep -Fxq "feature change (windows)"
+          git log --pretty=format:"%s" | grep -Fxq "feature change (ubuntu)"
+          git log --pretty=format:"%s" | grep -Fxq "merge ubuntu into main"
+
+      - name: Check branches exist (feature-windows, feature-ubuntu)
+        run: |
+          set -e
+          git branch -a | grep -q "feature-windows"
+          git branch -a | grep -q "feature-ubuntu"
